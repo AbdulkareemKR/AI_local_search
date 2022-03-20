@@ -19,5 +19,5 @@ def is_goal(state):
     return fitness(state) == max_attacks
 
 
-x =1
+
 
