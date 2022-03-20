@@ -19,5 +19,12 @@ def is_goal(state):
     return fitness(state) == max_attacks
 
 
-
+def fitness_probs(population):
+    probabilities = []
+    for state in population:  # iterate over the initial populating to find fitness for each one of them
+        probabilities.append(fitness(state))
+    fitness_sum = sum(probabilities)  # save the sum of all fitnesses 
+    for i in range(probabilities):
+        probabilities[i] /= fitness_sum  # updating probabilities to percentage instead of values
+    return probabilities
 
