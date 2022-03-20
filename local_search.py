@@ -29,5 +29,5 @@ def fitness_probs(population):  # Returns a list of probabilities for the states
     return probabilities
 
 
-def select_parents(population, probs):
+# def select_parents(population, probs):
 
