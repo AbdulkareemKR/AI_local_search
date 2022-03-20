@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def fitness(state):
+def fitness(state): # Returns the fitness value of a state
     max_attacks = (len(state) * (len(state) - 1)) / 2  # finding the highest number of possible attacks in N*N queens
     real_attacks = 0
 
@@ -14,17 +14,20 @@ def fitness(state):
     return fitness_value
 
 
-def is_goal(state):
+def is_goal(state): # Returns true if the given state is the goal solution
     max_attacks = (len(state) * (len(state) - 1)) / 2
     return fitness(state) == max_attacks
 
 
-def fitness_probs(population):
+def fitness_probs(population):  # Returns a list of probabilities for the states in the population.
     probabilities = []
     for state in population:  # iterate over the initial populating to find fitness for each one of them
         probabilities.append(fitness(state))
     fitness_sum = sum(probabilities)  # save the sum of all fitnesses 
-    for i in range(probabilities):
+    for i in range(len(probabilities)):
         probabilities[i] /= fitness_sum  # updating probabilities to percentage instead of values
     return probabilities
+
+
+def select_parents(population, probs):
 
