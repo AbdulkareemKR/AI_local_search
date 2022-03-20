@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def fitness(state): # Returns the fitness value of a state
+def fitness(state):  # Returns the fitness value of a state
     max_attacks = (len(state) * (len(state) - 1)) / 2  # finding the highest number of possible attacks in N*N queens
     real_attacks = 0
 
@@ -14,7 +14,7 @@ def fitness(state): # Returns the fitness value of a state
     return fitness_value
 
 
-def is_goal(state): # Returns true if the given state is the goal solution
+def is_goal(state):  # Returns true if the given state is the goal solution
     max_attacks = (len(state) * (len(state) - 1)) / 2
     return fitness(state) == max_attacks
 
@@ -29,5 +29,23 @@ def fitness_probs(population):  # Returns a list of probabilities for the states
     return probabilities
 
 
-# def select_parents(population, probs):
+def select_parents(population, probs):
+    parent = np.random.choice(len(population), 2, True,
+                              probs)  # arg1 is an array or int arg2 number of selected items arg3 with repeating arg4 the probabilities of each choice
+    return [population[parent[0]], population[parent[1]]]  # return the tuples at the parent indices
 
+
+def reproduce(parent1, parent2):
+    state_size = len(parent1)
+    crossover_point = np.random.randint(state_size, high=None, size=1,
+                                        dtype=int)  # return a single random list element (int) from 0 to state size
+    child = list(parent1)
+    for i in range(crossover_point[0], state_size):  # generating a crossovered child from the two parents
+        child[i] = parent2[i]
+    return tuple(child)
+
+
+def mutate(state, m_rate=0.1):
+    sample_float = np.random.uniform(low=0, high=1,
+                                     size=1)  # return a single random double list element between 0 and less than 1
+    if sample_float <= m_rate:
