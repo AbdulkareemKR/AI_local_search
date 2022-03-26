@@ -21,7 +21,9 @@ class GraphColorCSP:
         else:
             for variable in assignment:
                 for adjacency in self.adjacency[variable]:
-                    if assignment[adjacency] is not None and not self.diff_satisfied(variable, assignment[variable],adjacency, assignment[adjacency]):  # checks if the two adjacent variables have the same color
+                    if assignment[adjacency] is not None and not self.diff_satisfied(variable, assignment[variable],
+                                                                                     adjacency, assignment[
+                                                                                         adjacency]):  # checks if the two adjacent variables have the same color
                         return False
             return True
 
@@ -29,7 +31,9 @@ class GraphColorCSP:
         for variable in assignment:
             for adjacency in self.adjacency[variable]:
                 if adjacency in assignment:
-                    if assignment[adjacency] is not None and not self.diff_satisfied(variable, assignment[variable], adjacency, assignment[adjacency]): # checks if the two variables have the same color
+                    if assignment[adjacency] is not None and not self.diff_satisfied(variable, assignment[variable],
+                                                                                     adjacency, assignment[
+                                                                                         adjacency]):  # checks if the two variables have the same color
                         return False
         return True
 
@@ -45,24 +49,25 @@ def ac3(graphcolorcsp, arcs_queue=None, current_domains=None, assignment={}):
     set(arcs_queue)
     while arcs_queue:
         xi, xj = arcs_queue.pop()
-        if revise(updated_domains, assignment, xi, xj):
+        if revise(graphcolorcsp, updated_domains, assignment, xi, xj):
             if len(updated_domains[xi]) == 0:
                 return False, updated_domains
             else:
                 for xk in graphcolorcsp.adjacency[xi]:
                     if xk != xj and xk not in assignment:
                         arcs_queue.add((xk, xi))
+        print(updated_domains)
     return True, updated_domains
 
 
-def revise(updated_domains, assignment, xi, xj):
+def revise(graphcolorcsp, updated_domains, assignment, xi, xj):
     revised = False
     for color in updated_domains[xi]:
         if color in updated_domains[xj] and len(updated_domains[xj]) == 1:  # if the neighbour have the same color and has no other color choice
             new_domain = set(updated_domains[xi])
             new_domain.remove(color)
             updated_domains[xi] = new_domain
-            print(updated_domains)
+            # print(updated_domains)
             revised = True
     return revised
 
@@ -71,8 +76,9 @@ def create_arcs_queue(graphcolorcsp):
     acrs_queue = set()
     for variable in graphcolorcsp.variables:
         for adjacency in graphcolorcsp.adjacency[variable]:
-            acrs_queue.add((adjacency, variable))
+            acrs_queue.add((variable, adjacency))
     return acrs_queue
+
 
 def backtracking(graphcolorcsp):
     current_domains = {}
@@ -80,22 +86,23 @@ def backtracking(graphcolorcsp):
         current_domains[variable] = list(graphcolorcsp.colors)
     return backtracking_helper(graphcolorcsp, {}, current_domains)
 
+
 def backtracking_helper(graphcolorcsp, assignment={}, current_domains=None):
     if graphcolorcsp.is_goal(assignment):
         return assignment
-    MRV = find_MRV(graphcolorcsp, current_domains, assignment if assignment else {})  # find the variable with Minimum Remaining Values
+    MRV = find_MRV(graphcolorcsp, current_domains,
+                   assignment if assignment else {})  # find the variable with Minimum Remaining Values
     for color in current_domains[MRV]:  # iterate on the colors that are in the variable domain
         assignment[MRV] = color
+        current_domains[MRV] = set([color])
         if graphcolorcsp.check_partial_assignment(assignment):  # checks if color assignment is consistent
-            inferences, updated_domains = ac3(graphcolorcsp, None, copy.deepcopy(current_domains), assignment)  # apply ac3 constraints after the assignment
+            inferences, updated_domains = ac3(graphcolorcsp, None, copy.deepcopy(current_domains),assignment)  # apply ac3 constraints after the assignment
             if inferences is not False:
-                current_domains = copy.deepcopy(updated_domains)  # update the current domains
-                # print("here", current_domains)
-                result = backtracking_helper(graphcolorcsp, assignment, copy.deepcopy(current_domains)) # recall the function for the other assignments
+                # current_domains = copy.deepcopy(updated_domains)  # update the current domains
+                result = backtracking_helper(graphcolorcsp, assignment, updated_domains)  # recall the function for the other assignments
                 if result is not None:
                     return result
-            # del assignment[MRV]
-            assignment.pop(MRV)
+            del assignment[MRV]
     return None
 
 
@@ -106,11 +113,13 @@ def find_MRV(graphcolorcsp, current_domains, assignment={}):
         if len(current_domains[variable]) < len(current_domains[MRV]):  # checks if there is better unassigned_var
             MRV = variable
         elif len(current_domains[variable]) == len(current_domains[MRV]):
-            if len(graphcolorcsp.adjacency[variable]) > len(graphcolorcsp.adjacency[MRV]):  # if unassigned_var equal check Degree value [as tie breaker]
+            if len(graphcolorcsp.adjacency[variable]) > len(
+                    graphcolorcsp.adjacency[MRV]):  # if unassigned_var equal check Degree value [as tie breaker]
                 MRV = variable
     return MRV
 
-def LCV_order(graphcolorcsp, current_domains, MRV, assignment):
+
+def LCV_order(graphcolorcsp, current_domains, MRV, assignment): # implementation is not correct
     domains_count = []
     for color in current_domains[MRV]:
         count = 0
@@ -120,5 +129,3 @@ def LCV_order(graphcolorcsp, current_domains, MRV, assignment):
         domains_count.append([count, color])
     domains_count.sort()
     return list(list(zip(*domains_count))[1])
-
-
