@@ -1,5 +1,6 @@
 import numpy as np
-
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 def genetic_algorithm(population, m_rate=0.1, max_iters=5000):
     new_population = population
@@ -78,4 +79,14 @@ def mutate(state, m_rate=0.1):
         mutated[first_sample[0]] = second_sample[0]
     return mutated
 
-def
+
+def visualize_nqueens_solution(n_queens, file_name):
+    size = len(n_queens)
+    matrix = np.zeros((size, size))
+    for i in range(len(n_queens)):
+        matrix[n_queens[i]][i] = 1
+    plt.figure(figsize=(size, size))
+    sns.heatmap(matrix, cmap="Purples", linewidths=1.5, linecolor='k', cbar=False)
+    plt.savefig(file_name)
+    plt.show()
+    plt.close()

@@ -45,7 +45,7 @@ if __name__ == "__main__":
     current_domains = {'WA': ['red'], 'NT': ['green', 'blue'], 'Q': ['green'],
                        'NSW': ['red', 'blue'], 'V': ['red', 'green', 'blue'], 
                        'SA': ['green', 'blue'], 'T': ['red', 'green', 'blue']}
-    arcs_queue = [(n, 'Q') for n in graphcolorcsp.adjacency['Q'] if n not in assignment]
+    arcs_queue = set([(n, 'Q') for n in graphcolorcsp.adjacency['Q'] if n not in assignment])
     is_consistent, reduced_domains = ac3(graphcolorcsp, arcs_queue=arcs_queue, current_domains=current_domains, assignment=assignment)
     print(is_consistent, reduced_domains) # False, update domains
     # note there are multiple variables whose domain can go to zero, and so which one your ac3 implementation detects first 

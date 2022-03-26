@@ -1,16 +1,16 @@
-# This is a sample Python script.
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+a = ["mm","ff"]
+b = ['mm', 'ff', "f"]
+c = {"5": [5,3,5], "2": [64,35,6]}
 
+t = {"a","ag","t"}
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+t.add("a")
+print(t)
+# print(c)
+#
+# a = list(c.items())
+# print(a)
 
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+print(a.sort())
+print(a)
