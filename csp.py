@@ -40,7 +40,7 @@ class GraphColorCSP:
 
 def ac3(graphcolorcsp, arcs_queue=None, current_domains=None, assignment={}):
     if arcs_queue is None:
-        arcs_queue = create_arcs_queue(graphcolorcsp)
+        arcs_queue = create_arcs_queue(graphcolorcsp, graphcolorcsp.variables)
     if current_domains is None:
         current_domains = {}
         for variable in graphcolorcsp.variables:
@@ -56,7 +56,7 @@ def ac3(graphcolorcsp, arcs_queue=None, current_domains=None, assignment={}):
                 for xk in graphcolorcsp.adjacency[xi]:
                     if xk != xj and xk not in assignment:
                         arcs_queue.add((xk, xi))
-        print(updated_domains)
+        # print(updated_domains)
     return True, updated_domains
 
 
@@ -72,11 +72,11 @@ def revise(graphcolorcsp, updated_domains, assignment, xi, xj):
     return revised
 
 
-def create_arcs_queue(graphcolorcsp):
+def create_arcs_queue(graphcolorcsp, variables):
     acrs_queue = set()
-    for variable in graphcolorcsp.variables:
+    for variable in variables:
         for adjacency in graphcolorcsp.adjacency[variable]:
-            acrs_queue.add((variable, adjacency))
+            acrs_queue.add((adjacency, variable))
     return acrs_queue
 
 
@@ -94,9 +94,9 @@ def backtracking_helper(graphcolorcsp, assignment={}, current_domains=None):
                    assignment if assignment else {})  # find the variable with Minimum Remaining Values
     for color in current_domains[MRV]:  # iterate on the colors that are in the variable domain
         assignment[MRV] = color
-        current_domains[MRV] = set([color])
+        current_domains[MRV] = {color}
         if graphcolorcsp.check_partial_assignment(assignment):  # checks if color assignment is consistent
-            inferences, updated_domains = ac3(graphcolorcsp, None, copy.deepcopy(current_domains),assignment)  # apply ac3 constraints after the assignment
+            inferences, updated_domains = ac3(graphcolorcsp, create_arcs_queue(graphcolorcsp, [MRV]), copy.deepcopy(current_domains),assignment)  # apply ac3 constraints after the assignment
             if inferences is not False:
                 # current_domains = copy.deepcopy(updated_domains)  # update the current domains
                 result = backtracking_helper(graphcolorcsp, assignment, updated_domains)  # recall the function for the other assignments
@@ -104,6 +104,7 @@ def backtracking_helper(graphcolorcsp, assignment={}, current_domains=None):
                     return result
             del assignment[MRV]
     return None
+
 
 
 def find_MRV(graphcolorcsp, current_domains, assignment={}):
@@ -123,9 +124,13 @@ def LCV_order(graphcolorcsp, current_domains, MRV, assignment): # implementation
     domains_count = []
     for color in current_domains[MRV]:
         count = 0
-        updated_domains = ac3(graphcolorcsp, None, copy.deepcopy(current_domains), assignment)[1]
-        for variable in updated_domains:
+        current_domains[MRV] = {color}
+        updated_domains = ac3(graphcolorcsp, create_arcs_queue(graphcolorcsp, [MRV]), copy.deepcopy(current_domains), assignment)[1]
+        unassigned_var = [variable for variable in updated_domains if variable not in assignment]
+        for variable in unassigned_var:
+            # print(updated_domains[variable])
             count += len(updated_domains[variable])
         domains_count.append([count, color])
     domains_count.sort()
+    # print(domains_count)
     return list(list(zip(*domains_count))[1])
