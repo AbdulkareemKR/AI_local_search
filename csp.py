@@ -49,7 +49,7 @@ def ac3(graphcolorcsp, arcs_queue=None, current_domains=None, assignment={}):
     set(arcs_queue)
     while arcs_queue:
         xi, xj = arcs_queue.pop()
-        if revise(graphcolorcsp, updated_domains, assignment, xi, xj):
+        if revise(updated_domains, xi, xj):
             if len(updated_domains[xi]) == 0:
                 return False, updated_domains
             else:
@@ -60,14 +60,11 @@ def ac3(graphcolorcsp, arcs_queue=None, current_domains=None, assignment={}):
     return True, updated_domains
 
 
-def revise(graphcolorcsp, updated_domains, assignment, xi, xj):
+def revise(updated_domains, xi, xj):
     revised = False
     for color in updated_domains[xi]:
         if color in updated_domains[xj] and len(updated_domains[xj]) == 1:  # if the neighbour have the same color and has no other color choice
-            new_domain = set(updated_domains[xi])
-            new_domain.remove(color)
-            updated_domains[xi] = new_domain
-            # print(updated_domains)
+            updated_domains[xi].remove(color)
             revised = True
     return revised
 
